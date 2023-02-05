@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "AwesomeProject",
-    "slug": "AwesomeProject",
+    "name": "충북학사 입출입시스템 PASS",
+    "slug": "cbhs-pass",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/cbhs-pass.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -22,17 +22,17 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/cbhs-pass.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.livetoday.AwesomeProject"
+      "package": "com.livetoday.cbhsPASS"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "58552a95-8947-4a01-91bc-9dbc06fe0dce"
+        "projectId": "3926be51-3b53-48e4-9b7c-19c1dc49107c"
       }
     }
   }

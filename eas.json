@@ -1,6 +1,6 @@
 {
   "build": {
-    "preview": {
+    "for-me": {
       "android": {
         "buildType": "apk"
       }
