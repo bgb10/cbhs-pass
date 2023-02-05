@@ -6,7 +6,18 @@ import { WebView } from 'react-native-webview'
 const App = () => {
   const [isLoginSuccess, setIsLoginSuccess] = useState(false)
 
-  const run = `
+  const run = ` 
+  if (
+    document.getElementById('USER_ID') &&
+    document.getElementById('EMP_PW') &&
+    document.getElementById('SAVE_PW') &&
+    document.getElementById('USER_ID').value &&
+    document.getElementById('EMP_PW').value &&
+    document.getElementById('SAVE_PW').checked
+    ) {
+    document.getElementById('LoginForm').submit()
+  }
+
   // 한 번이라도 로그인을 성공하면 자동 로그인이 되고, 4분 30초마다 로그인이 갱신된다.
   if(window.location.href.includes('myInfo')) {
     window.ReactNativeWebView.postMessage('loginSuccess');
