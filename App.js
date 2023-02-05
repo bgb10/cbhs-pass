@@ -22,7 +22,7 @@ const App = () => {
   if(window.location.href.includes('myInfo')) {
     window.ReactNativeWebView.postMessage('loginSuccess');
 
-    setTimeout(() => {window.location.href = 'http://115.92.96.29:8080/employee/login.jsp'}, 10000)
+    setTimeout(() => {window.location.href = 'http://115.92.96.29:8080/employee/login.jsp'}, 240000)
   }
 
   // 로그인을 성공했을 때에만 자동 로그인이 시도된다.
