@@ -13,13 +13,16 @@ import { StyleSheet, Text, View } from 'react-native'
 import { WebView } from 'react-native-webview'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const AUTO_LOGIN_KEY = 'isAutoLoginEnabled'
-const PRIVACY_KEY = 'privacy'
+const AUTO_LOGIN_KEY = 'q20'
+const PRIVACY_KEY = 'w20'
+let id = ''
+let pw = ''
 
 const App = () => {
-  const [isAutoLoginEnabled, setIsAutoLoginEnabled] = useState(false)
-  const [id, setId] = useState('')
-  const [pw, setPw] = useState('')
+  const [isAutoLoginEnabled, setIsAutoLoginEnabled] = useState(true)
+  // const [id, setId] = useState('')
+  // const [pw, setPw] = useState('')
+  const [isPrivacyStored, setIsPrivacyStored] = useState(false)
 
   const getData = async (AUTO_LOGIN_KEY) => {
     try {
@@ -51,6 +54,16 @@ const App = () => {
   }
 
   useEffect(() => {
+    getData(PRIVACY_KEY).then((privacy) => {
+      if (privacy === null) {
+        setIsPrivacyStored(false)
+      } else {
+        setIsPrivacyStored(true)
+        id = privacy.id
+        pw = privacy.pw
+      }
+    })
+
     getData(AUTO_LOGIN_KEY).then((flag) => {
       if (flag === null) {
         storeData(AUTO_LOGIN_KEY, 'false')
@@ -66,38 +79,8 @@ const App = () => {
     })
   })
 
-  const run = ` 
-    if (
-      document.getElementById('USER_ID') &&
-      document.getElementById('EMP_PW') &&
-      document.getElementById('SAVE_PW') &&
-      document.getElementById('USER_ID').value &&
-      document.getElementById('EMP_PW').value &&
-      document.getElementById('SAVE_PW').checked
-      ) {
-      document.getElementById('LoginForm').submit()
-    }
-
-    // 한 번이라도 로그인을 성공하면 자동 로그인이 되고, 4분 30초마다 로그인이 갱신된다.
-    if(window.location.href.includes('myInfo')) {
-      window.ReactNativeWebView.postMessage('loginSuccess');
-
-      setTimeout(() => {window.location.href = 'http://115.92.96.29:8080/employee/login.jsp'}, 240000)
-    }
-
-    // 로그인을 성공했을 때에만 자동 로그인이 시도된다.
-    if(${true}) {
-      document.getElementById('USER_ID').value = '202051'
-      document.getElementById('EMP_PW').value = '001028'
-      document.getElementById('SAVE_PW').checked = true
-
-      document.getElementById('LoginForm').submit()
-    }
-    
-    true; // note: this is required, or you'll sometimes get silent failures
-`
-
-  const injectScript = `
+  const getInjectScript = () => {
+    const str = `
     true;
 
     if(window.location.href.includes('login')) {
@@ -110,23 +93,46 @@ const App = () => {
         
         window.ReactNativeWebView.postMessage(serializedPrivacy)
       })
+
+      if(${isAutoLoginEnabled} && ${isPrivacyStored}) {
+        document.getElementById('USER_ID').value = '${id}'
+        document.getElementById('EMP_PW').value = '${pw}'
+        document.getElementById('SAVE_PW').checked = true
+        
+        document.getElementById('LoginForm').submit()
+      }
     }
     else if(window.location.href.includes('myInfo')) {
       window.ReactNativeWebView.postMessage('save')
     }
-    
   `
+    console.log(str)
+    console.log(id)
+    console.log(pw)
+
+    return str
+  }
 
   const messageHandler = (event) => {
     const message = event.nativeEvent.data
     if (message === 'save') {
       // save in DB for auto-login
+      console.log({ id, pw })
       storeData(PRIVACY_KEY, JSON.stringify({ id, pw }))
+      console.log({ id, pw })
+
+      setIsPrivacyStored(true)
     } else {
       // temporarily save
+      console.log('temporarily saved!')
+      console.log(message)
       const privacy = JSON.parse(message)
-      setId(privacy.id)
-      setPw(privacy.pw)
+      console.log('privacy')
+      console.log(privacy)
+      id = privacy.id
+      pw = privacy.pw
+      console.log('isSaved?')
+      console.log(id)
     }
   }
 
@@ -136,7 +142,7 @@ const App = () => {
         style={{ flex: 1 }}
         originWhitelist={['*']}
         source={{ uri: 'http://115.92.96.29:8080/employee/login.jsp' }}
-        injectedJavaScript={injectScript}
+        injectedJavaScript={getInjectScript()}
         onMessage={messageHandler}
       />
       <TouchableOpacity
