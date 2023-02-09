@@ -1,10 +1,51 @@
 import React, { useRef, useState, useEffect, Component } from 'react'
-import { AppState, SafeAreaView, StatusBar } from 'react-native'
+import {
+  Alert,
+  AppState,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  Button,
+  Touchable,
+  TouchableOpacity
+} from 'react-native'
 import { StyleSheet, Text, View } from 'react-native'
 import { WebView } from 'react-native-webview'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const App = () => {
-  const [isLoginSuccess, setIsLoginSuccess] = useState(false)
+  const [isAutoLoginEnabled, setIsAutoLoginEnabled] = useState(false)
+
+  const getData = async (key) => {
+    try {
+      const value = await AsyncStorage.getItem(key)
+      return value // null or value
+    } catch (e) {
+      // error reading value
+    }
+  }
+
+  const storeData = async (key, value) => {
+    try {
+      await AsyncStorage.setItem(key, value)
+    } catch (e) {
+      // saving error
+    }
+  }
+
+  useEffect(() => {
+    getData('isAutoLoginEnabled').then((flag) => {
+      if (flag === null) {
+        storeData('isAutoLoginEnabled', 'false')
+      } else {
+        if (flag === 'true') {
+          setIsAutoLoginEnabled(true)
+        } else {
+          // do nothing
+        }
+      }
+    })
+  })
 
   const run = ` 
   if (
@@ -26,7 +67,7 @@ const App = () => {
   }
 
   // 로그인을 성공했을 때에만 자동 로그인이 시도된다.
-  if(${isLoginSuccess}) {
+  if(${true}) {
     document.getElementById('USER_ID').value = '202051'
     document.getElementById('EMP_PW').value = '001028'
     document.getElementById('SAVE_PW').checked = true
@@ -37,22 +78,37 @@ const App = () => {
   true; // note: this is required, or you'll sometimes get silent failures
 `
 
-  const handleEvent = (e) => {
-    setIsLoginSuccess(true)
-  }
-
   return (
-    <View
-      style={{
-        flex: 1
-      }}
-    >
-      <WebView
-        originWhitelist={['*']}
-        source={{ uri: 'http://115.92.96.29:8080/employee/login.jsp' }}
-        injectedJavaScript={run}
-        onMessage={handleEvent}
-      />
+    <View>
+      <ScrollView
+        style={{
+          flexGrow: 1
+        }}
+      >
+        <WebView
+          style={{ height: 10000 }}
+          originWhitelist={['*']}
+          source={{ uri: 'http://115.92.96.29:8080/employee/login.jsp' }}
+          injectedJavaScript={run}
+          // onMessage={handleEvent}
+        />
+      </ScrollView>
+      <TouchableOpacity
+        style={{
+          position: 'absolute',
+          bottom: 20,
+          alignSelf: 'center',
+          backgroundColor: isAutoLoginEnabled ? '#4e73df' : 'gray',
+          width: 80,
+          height: 35,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 3.5
+        }}
+        onPress={() => setIsAutoLoginEnabled(!isAutoLoginEnabled)}
+      >
+        <Text style={{ color: 'white' }}>자동 로그인</Text>
+      </TouchableOpacity>
     </View>
   )
 }
