@@ -13,6 +13,8 @@ import { StyleSheet, Text, View } from 'react-native'
 import { WebView } from 'react-native-webview'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
+const KEY = 'isAutoLoginEnabled'
+
 const App = () => {
   const [isAutoLoginEnabled, setIsAutoLoginEnabled] = useState(false)
 
@@ -33,13 +35,27 @@ const App = () => {
     }
   }
 
+  const enableAutoLogin = () => {
+    setIsAutoLoginEnabled(true)
+
+    storeData(KEY, 'true')
+  }
+
+  const disableAutoLogin = () => {
+    setIsAutoLoginEnabled(false)
+
+    storeData(KEY, 'false')
+  }
+
   useEffect(() => {
-    getData('isAutoLoginEnabled').then((flag) => {
+    getData(KEY).then((flag) => {
       if (flag === null) {
-        storeData('isAutoLoginEnabled', 'false')
+        storeData(KEY, 'false')
       } else {
         if (flag === 'true') {
           setIsAutoLoginEnabled(true)
+
+          // 자동 로그인 수행
         } else {
           // do nothing
         }
@@ -105,7 +121,9 @@ const App = () => {
           justifyContent: 'center',
           borderRadius: 3.5
         }}
-        onPress={() => setIsAutoLoginEnabled(!isAutoLoginEnabled)}
+        onPress={() =>
+          isAutoLoginEnabled ? disableAutoLogin() : enableAutoLogin()
+        }
       >
         <Text style={{ color: 'white' }}>자동 로그인</Text>
       </TouchableOpacity>
