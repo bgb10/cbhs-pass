@@ -95,26 +95,20 @@ const App = () => {
 `
 
   return (
-    <View>
-      <ScrollView
-        style={{
-          flexGrow: 1
-        }}
-      >
-        <WebView
-          style={{ height: 10000 }}
-          originWhitelist={['*']}
-          source={{ uri: 'http://115.92.96.29:8080/employee/login.jsp' }}
-          injectedJavaScript={run}
-          // onMessage={handleEvent}
-        />
-      </ScrollView>
+    <View style={{ flex: 1 }}>
+      <WebView
+        style={{ flex: 1 }}
+        originWhitelist={['*']}
+        source={{ uri: 'http://115.92.96.29:8080/employee/login.jsp' }}
+        injectedJavaScript={run}
+        // onMessage={handleEvent}
+      />
       <TouchableOpacity
         style={{
           position: 'absolute',
           bottom: 20,
           alignSelf: 'center',
-          backgroundColor: isAutoLoginEnabled ? '#4e73df' : 'gray',
+          backgroundColor: isAutoLoginEnabled ? '#4cbb17' : 'gray',
           width: 80,
           height: 35,
           alignItems: 'center',
