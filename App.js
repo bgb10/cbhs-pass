@@ -13,8 +13,8 @@ import { StyleSheet, Text, View } from 'react-native'
 import { WebView } from 'react-native-webview'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const AUTO_LOGIN_KEY = 'q20'
-const PRIVACY_KEY = 'w20'
+const AUTO_LOGIN_KEY = 'q21'
+const PRIVACY_KEY = 'w21'
 let id = ''
 let pw = ''
 
@@ -106,10 +106,6 @@ const App = () => {
       window.ReactNativeWebView.postMessage('save')
     }
   `
-    console.log(str)
-    console.log(id)
-    console.log(pw)
-
     return str
   }
 
@@ -117,22 +113,14 @@ const App = () => {
     const message = event.nativeEvent.data
     if (message === 'save') {
       // save in DB for auto-login
-      console.log({ id, pw })
       storeData(PRIVACY_KEY, JSON.stringify({ id, pw }))
-      console.log({ id, pw })
 
       setIsPrivacyStored(true)
     } else {
       // temporarily save
-      console.log('temporarily saved!')
-      console.log(message)
       const privacy = JSON.parse(message)
-      console.log('privacy')
-      console.log(privacy)
       id = privacy.id
       pw = privacy.pw
-      console.log('isSaved?')
-      console.log(id)
     }
   }
 
