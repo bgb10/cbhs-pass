@@ -1,12 +1,13 @@
 import React, { useRef, useState, useEffect } from 'react'
-import { TouchableOpacity } from 'react-native'
+import { AppState, TouchableOpacity } from 'react-native'
 import { Text, View } from 'react-native'
 import { WebView } from 'react-native-webview'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
   loginDataInterceptor,
   sendMessageOfPageUrl,
-  getLoginScript
+  getLoginScript,
+  moveToLoginPageScript
 } from './webViewInjectableScripts.js'
 
 const AUTO_LOGIN_KEY = 'qqq12'
@@ -19,6 +20,8 @@ const App = () => {
   const [tempPw, setTempPw] = useState('')
   const [currentPage, setCurrentPage] = useState('login')
   const webViewRef = useRef()
+  const appState = useRef(AppState.currentState)
+  const [appStateVisible, setAppStateVisible] = useState(appState.current)
 
   const movedToLoginPage = () => {
     if (currentPage === 'login') {
@@ -91,7 +94,25 @@ const App = () => {
     })
 
     // movedToLoginPage() 왜 여기에 이거 넣으면 promise 가 너무 많이 호출되었다고 하지 501?
-  })
+
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        console.log('App has come to the foreground!')
+        webViewRef.current.injectJavaScript(moveToLoginPageScript)
+      }
+
+      appState.current = nextAppState
+      setAppStateVisible(appState.current)
+      console.log('AppState', appState.current)
+    })
+
+    return () => {
+      subscription.remove()
+    }
+  }, [])
 
   const messageHandler = (event) => {
     const serializedMessage = event.nativeEvent.data

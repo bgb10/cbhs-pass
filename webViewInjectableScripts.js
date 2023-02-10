@@ -28,4 +28,13 @@ document.getElementById('SAVE_PW').checked = true
 document.getElementById('LoginForm').submit()
 `
 
-export { loginDataInterceptor, sendMessageOfPageUrl, getLoginScript }
+const moveToLoginPageScript = `
+window.location.href = 'http://115.92.96.29:8080/employee/login.jsp'
+`
+
+export {
+  loginDataInterceptor,
+  sendMessageOfPageUrl,
+  getLoginScript,
+  moveToLoginPageScript
+}
