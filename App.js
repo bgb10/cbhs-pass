@@ -1,17 +1,13 @@
-import React, { useRef, useState, useEffect, Component } from 'react'
-import {
-  Alert,
-  AppState,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  Button,
-  Touchable,
-  TouchableOpacity
-} from 'react-native'
-import { StyleSheet, Text, View } from 'react-native'
+import React, { useRef, useState, useEffect } from 'react'
+import { TouchableOpacity } from 'react-native'
+import { Text, View } from 'react-native'
 import { WebView } from 'react-native-webview'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import {
+  loginDataInterceptor,
+  sendMessageOfPageUrl,
+  getLoginScript
+} from './webViewInjectableScripts.js'
 
 const AUTO_LOGIN_KEY = 'qqq12'
 const PRIVACY_KEY = 'www12'
@@ -69,7 +65,6 @@ const App = () => {
     console.log('when this call?')
 
     if (currentPage === 'login') {
-      console.log('흠 페이지가 제대로 안잡히나?')
       isPrivacyStored = false
     }
 
@@ -98,14 +93,6 @@ const App = () => {
     // movedToLoginPage() 왜 여기에 이거 넣으면 promise 가 너무 많이 호출되었다고 하지 501?
   })
 
-  const getLoginScript = (id, pw) => `
-    document.getElementById('USER_ID').value = '${id}'
-    document.getElementById('EMP_PW').value = '${pw}'
-    document.getElementById('SAVE_PW').checked = true
-        
-    document.getElementById('LoginForm').submit()
-  `
-
   const messageHandler = (event) => {
     const serializedMessage = event.nativeEvent.data
     const message = JSON.parse(serializedMessage)
@@ -124,18 +111,7 @@ const App = () => {
           console.log('여기 안들어가나?')
 
           getData(PRIVACY_KEY).then((serializedPrivacy) => {
-            console.log(serializedPrivacy)
             const privacy = JSON.parse(serializedPrivacy)
-
-            console.log(privacy)
-
-            const a = privacy.id
-            const b = privacy.pw
-            console.log(a)
-            console.log(b)
-
-            const script = getLoginScript(a, b)
-            console.log(script)
 
             webViewRef.current.injectJavaScript(
               getLoginScript(privacy.id, privacy.pw)
@@ -157,28 +133,6 @@ const App = () => {
       setTempPw(message.data.pw)
     }
   }
-
-  const loginDataInterceptor = `
-    document.getElementById('LoginForm').addEventListener('submit', (e) => {
-      const form = e.target
-      const id = form.querySelector('#USER_ID').value
-      const pw = form.querySelector('#EMP_PW').value
-      const privacy = {id, pw}
-      const message = {type: "privacy", data: privacy}
-      const serializedMessage = JSON.stringify(message)
-      
-      window.ReactNativeWebView.postMessage(serializedMessage)
-    })
-  `
-
-  // TODO: regex 로 추출하기 (*.jsp 부분)
-  const sendMessageOfPageUrl = `
-    true;
-    const data = window.location.href.split('/')[4].slice(0, -4)
-    const message = {type:"page", data: data}
-    const serializedMessage = JSON.stringify(message)
-    window.ReactNativeWebView.postMessage(serializedMessage)
-  `
 
   return (
     <View style={{ flex: 1 }}>
