@@ -13,18 +13,22 @@ import { StyleSheet, Text, View } from 'react-native'
 import { WebView } from 'react-native-webview'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const AUTO_LOGIN_KEY = 'qqq11'
-const PRIVACY_KEY = 'www11'
+const AUTO_LOGIN_KEY = 'qqq12'
+const PRIVACY_KEY = 'www12'
+let isPrivacyStored = false
 
 const App = () => {
   const [isAutoLoginEnabled, setIsAutoLoginEnabled] = useState(true)
   const [tempId, setTempId] = useState('')
   const [tempPw, setTempPw] = useState('')
-  const [isPrivacyStored, setIsPrivacyStored] = useState(false)
   const [currentPage, setCurrentPage] = useState('login')
   const webViewRef = useRef()
 
   const movedToLoginPage = () => {
+    if (currentPage === 'login') {
+      isPrivacyStored = false
+    }
+
     setCurrentPage('login')
   }
 
@@ -66,14 +70,14 @@ const App = () => {
 
     if (currentPage === 'login') {
       console.log('흠 페이지가 제대로 안잡히나?')
-      setIsPrivacyStored(false)
+      isPrivacyStored = false
     }
 
     getData(PRIVACY_KEY).then((privacy) => {
       if (privacy === null) {
-        setIsPrivacyStored(false)
+        isPrivacyStored = false
       } else {
-        setIsPrivacyStored(true)
+        isPrivacyStored = true
       }
     })
 
@@ -144,7 +148,7 @@ const App = () => {
         // tempId, tempPw 영구 저장
         storeData(PRIVACY_KEY, JSON.stringify({ id: tempId, pw: tempPw })).then(
           () => {
-            setIsPrivacyStored(true)
+            isPrivacyStored = true
           }
         )
       }
