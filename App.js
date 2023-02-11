@@ -8,8 +8,8 @@ import {
   getLoginScript
 } from './webViewInjectableScripts.js'
 
-const AUTO_LOGIN_FLAG_KEY = 'qqq28'
-const PRIVACY_KEY = 'www28'
+const AUTO_LOGIN_FLAG_KEY = 'asdfafsdfacxvrsadf'
+const PRIVACY_KEY = 'qwerqweqrewr'
 
 let tId = ''
 let tPw = ''
@@ -48,6 +48,23 @@ const App = () => {
         setIsAutoLoginEnabled(true)
       }
     })
+
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        const redirectTo = `window.location = 'http://115.92.96.29:8080/employee/login.jsp'`
+        webViewRef.current.injectJavaScript(redirectTo)
+      }
+
+      appState.current = nextAppState
+      setAppStateVisible(appState.current)
+    })
+
+    return () => {
+      subscription.remove()
+    }
   }, [])
 
   useEffect(() => {
