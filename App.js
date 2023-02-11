@@ -5,154 +5,134 @@ import { WebView } from 'react-native-webview'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
   loginDataInterceptor,
-  sendMessageOfPageUrl,
-  getLoginScript,
-  moveToLoginPageScript
+  getLoginScript
 } from './webViewInjectableScripts.js'
 
-const AUTO_LOGIN_KEY = 'qqq12'
-const PRIVACY_KEY = 'www12'
-let isPrivacyStored = false
+const AUTO_LOGIN_FLAG_KEY = 'qqq24'
+const PRIVACY_KEY = 'www24'
+
+let tId = ''
+let tPw = ''
 
 const App = () => {
   const [isAutoLoginEnabled, setIsAutoLoginEnabled] = useState(true)
-  const [tempId, setTempId] = useState('')
-  const [tempPw, setTempPw] = useState('')
-  const [currentPage, setCurrentPage] = useState('login')
+  const [isPrivacyStored, setIsPrivacyStored] = useState(false)
+  const [privacy, setPrivacy] = useState(null)
+  const [currentPage, setCurrentPage] = useState('init')
   const webViewRef = useRef()
   const appState = useRef(AppState.currentState)
   const [appStateVisible, setAppStateVisible] = useState(appState.current)
 
-  const movedToLoginPage = () => {
-    if (currentPage === 'login') {
-      isPrivacyStored = false
-    }
+  // only runs at whenComponentMounted!
+  useEffect(() => {
+    Promise.all([
+      AsyncStorage.getItem(PRIVACY_KEY),
+      AsyncStorage.getItem(AUTO_LOGIN_FLAG_KEY)
+    ]).then((res) => {
+      const [savedSerializedPrivacy, savedSerializedIsAutoLoginEnabled] = res
 
-    setCurrentPage('login')
-  }
+      if (savedSerializedPrivacy === null) {
+        setIsPrivacyStored(false)
+      } else {
+        setIsPrivacyStored(true)
 
-  const movedToMyInfoPage = () => {
-    setCurrentPage('myInfo')
-  }
+        const savedParsedPrivacy = JSON.parse(savedSerializedPrivacy)
+        setPrivacy(savedParsedPrivacy)
+        tId = savedParsedPrivacy.id
+        tPw = savedParsedPrivacy.pw
+      }
 
-  const getData = async (key) => {
-    try {
-      const value = await AsyncStorage.getItem(key)
-      return value // null or value
-    } catch (e) {
-      // error reading value
-    }
-  }
+      if (savedSerializedIsAutoLoginEnabled === 'false') {
+        setIsAutoLoginEnabled(false)
+      } else {
+        setIsAutoLoginEnabled(true)
+      }
+    })
+  }, [])
 
-  const storeData = async (key, value) => {
-    try {
-      await AsyncStorage.setItem(key, value)
-    } catch (e) {
-      // saving error
-    }
-  }
-
-  const enableAutoLogin = () => {
-    setIsAutoLoginEnabled(true)
-
-    storeData(AUTO_LOGIN_KEY, 'true')
-  }
-
-  const disableAutoLogin = () => {
-    setIsAutoLoginEnabled(false)
-
-    storeData(AUTO_LOGIN_KEY, 'false')
-  }
+  useEffect(() => {}, [isPrivacyStored])
 
   useEffect(() => {
-    console.log('when this call?')
+    AsyncStorage.setItem(
+      AUTO_LOGIN_FLAG_KEY,
+      JSON.stringify(isAutoLoginEnabled)
+    )
+  }, [isAutoLoginEnabled])
 
-    if (currentPage === 'login') {
-      isPrivacyStored = false
+  useEffect(() => {
+    // console.log('is it call initialized stage?')
+
+    if (privacy !== null) {
+      console.log('설마 이거 실행되지는 않겠지.')
+
+      console.log(privacy)
+
+      AsyncStorage.setItem(PRIVACY_KEY, JSON.stringify(privacy)).then((res) =>
+        AsyncStorage.getItem(PRIVACY_KEY).then((res) => console.log(res))
+      )
     }
-
-    getData(PRIVACY_KEY).then((privacy) => {
-      if (privacy === null) {
-        isPrivacyStored = false
-      } else {
-        isPrivacyStored = true
-      }
-    })
-
-    getData(AUTO_LOGIN_KEY).then((flag) => {
-      if (flag === null) {
-        storeData(AUTO_LOGIN_KEY, 'false')
-      } else {
-        if (flag === 'true') {
-          setIsAutoLoginEnabled(true)
-
-          // TODO: 자동 로그인 수행
-        } else {
-          // do nothing
-        }
-      }
-    })
-
-    // movedToLoginPage() 왜 여기에 이거 넣으면 promise 가 너무 많이 호출되었다고 하지 501?
-
-    const subscription = AppState.addEventListener('change', (nextAppState) => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'
-      ) {
-        console.log('App has come to the foreground!')
-        webViewRef.current.injectJavaScript(moveToLoginPageScript)
-      }
-
-      appState.current = nextAppState
-      setAppStateVisible(appState.current)
-      console.log('AppState', appState.current)
-    })
-
-    return () => {
-      subscription.remove()
-    }
-  }, [])
+  }, [privacy])
 
   const messageHandler = (event) => {
     const serializedMessage = event.nativeEvent.data
     const message = JSON.parse(serializedMessage)
 
-    console.log(message)
+    // setTempId(message.data.id)
+    // setTempPw(message.data.pw)
+    tId = message.id
+    tPw = message.pw
 
-    if (message.type === 'page') {
-      if (message.data === 'login') {
-        movedToLoginPage()
+    console.log('message come!')
+  }
 
+  const handleWebViewNavigationStateChange = (newNavState) => {
+    // newNavState looks something like this:
+    // {
+    //   url?: string;
+    //   title?: string;
+    //   loading?: boolean;
+    //   canGoBack?: boolean;
+    //   canGoForward?: boolean;
+    // }
+    const { url, loading } = newNavState
+    if (!url || loading) return
+
+    const currentPage = url.split('/')[4].slice(0, -4) // TODO: regex
+
+    setCurrentPage((prevPage) => {
+      if (prevPage === 'login' && currentPage === 'myInfo') {
+        // TODO: id, pw 갱신
+        // but, message 를 받지 못한 상태에서 갱신을 하면 문제가 생길텐데 어떻게 하지?
+        // message 를 받는 것과, page 변경 event 를 받는 것 모두 언제 일어났는지 모른다.
+        // 둘다 일어났을 때 비로소 데이터를 갱신할 수 있다.
+        // message 를 waiting 하면서 message 가 오면 그때 저장하는거 어때? privacy 를 갱신하는거지.
+        console.log('page load detected!')
+
+        setPrivacy({ id: tId, pw: tPw })
+      } else if (
+        (prevPage === 'init' || prevPage === 'myInfo') &&
+        currentPage === 'login'
+      ) {
+        console.log('init, myInfo => login')
         webViewRef.current.injectJavaScript(loginDataInterceptor)
 
         console.log(isAutoLoginEnabled)
         console.log(isPrivacyStored)
         if (isAutoLoginEnabled && isPrivacyStored) {
-          console.log('여기 안들어가나?')
-
-          getData(PRIVACY_KEY).then((serializedPrivacy) => {
-            const privacy = JSON.parse(serializedPrivacy)
-
-            webViewRef.current.injectJavaScript(
-              getLoginScript(privacy.id, privacy.pw)
-            )
-          })
+          console.log(privacy.id)
+          webViewRef.current.injectJavaScript(
+            getLoginScript(privacy.id, privacy.pw)
+          )
         }
-      } else if (message.data === 'myInfo') {
-        movedToMyInfoPage()
-        console.log('message info page')
-        // tempId, tempPw 영구 저장
-        storeData(PRIVACY_KEY, JSON.stringify({ id: tempId, pw: tempPw })).then(
-          () => {
-            isPrivacyStored = true
-          }
-        )
+      } else if (prevPage === 'login' && currentPage === 'login') {
+        // setIsAutoLoginEnabled(false)
+        webViewRef.current.injectJavaScript(loginDataInterceptor)
       }
-    } else if (message.type === 'privacy') {
-      setTempId(message.data.id)
-      setTempPw(message.data.pw)
-    }
+
+      return currentPage
+    })
+
+    // messageHandler 가 여러가지 일들을 처리했었는데, 이제 페이지 이동 등은 별도의 handler 가 처리하기.  공식 문서는 킹이야...
   }
 
   return (
@@ -161,9 +141,9 @@ const App = () => {
         style={{ flex: 1 }}
         originWhitelist={['*']}
         source={{ uri: 'http://115.92.96.29:8080/employee/login.jsp' }}
-        injectedJavaScript={sendMessageOfPageUrl}
         ref={webViewRef}
         onMessage={messageHandler}
+        onNavigationStateChange={handleWebViewNavigationStateChange}
       />
       <TouchableOpacity
         style={{
@@ -177,9 +157,7 @@ const App = () => {
           justifyContent: 'center',
           borderRadius: 3.5
         }}
-        onPress={() =>
-          isAutoLoginEnabled ? disableAutoLogin() : enableAutoLogin()
-        }
+        onPress={() => setIsAutoLoginEnabled(!isAutoLoginEnabled)}
       >
         <Text style={{ color: 'white' }}>자동 로그인</Text>
       </TouchableOpacity>
