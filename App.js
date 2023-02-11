@@ -8,8 +8,8 @@ import {
   getLoginScript
 } from './webViewInjectableScripts.js'
 
-const AUTO_LOGIN_FLAG_KEY = 'qqq24'
-const PRIVACY_KEY = 'www24'
+const AUTO_LOGIN_FLAG_KEY = 'qqq28'
+const PRIVACY_KEY = 'www28'
 
 let tId = ''
 let tPw = ''
@@ -50,8 +50,6 @@ const App = () => {
     })
   }, [])
 
-  useEffect(() => {}, [isPrivacyStored])
-
   useEffect(() => {
     AsyncStorage.setItem(
       AUTO_LOGIN_FLAG_KEY,
@@ -60,16 +58,10 @@ const App = () => {
   }, [isAutoLoginEnabled])
 
   useEffect(() => {
-    // console.log('is it call initialized stage?')
-
     if (privacy !== null) {
-      console.log('설마 이거 실행되지는 않겠지.')
+      AsyncStorage.setItem(PRIVACY_KEY, JSON.stringify(privacy))
 
-      console.log(privacy)
-
-      AsyncStorage.setItem(PRIVACY_KEY, JSON.stringify(privacy)).then((res) =>
-        AsyncStorage.getItem(PRIVACY_KEY).then((res) => console.log(res))
-      )
+      setIsPrivacyStored(true)
     }
   }, [privacy])
 
@@ -77,12 +69,9 @@ const App = () => {
     const serializedMessage = event.nativeEvent.data
     const message = JSON.parse(serializedMessage)
 
-    // setTempId(message.data.id)
-    // setTempPw(message.data.pw)
     tId = message.id
     tPw = message.pw
-
-    console.log('message come!')
+    // TODO: 이 부분 어떻게 개선할지 생각
   }
 
   const handleWebViewNavigationStateChange = (newNavState) => {
@@ -106,20 +95,14 @@ const App = () => {
         // message 를 받는 것과, page 변경 event 를 받는 것 모두 언제 일어났는지 모른다.
         // 둘다 일어났을 때 비로소 데이터를 갱신할 수 있다.
         // message 를 waiting 하면서 message 가 오면 그때 저장하는거 어때? privacy 를 갱신하는거지.
-        console.log('page load detected!')
-
         setPrivacy({ id: tId, pw: tPw })
       } else if (
         (prevPage === 'init' || prevPage === 'myInfo') &&
         currentPage === 'login'
       ) {
-        console.log('init, myInfo => login')
         webViewRef.current.injectJavaScript(loginDataInterceptor)
 
-        console.log(isAutoLoginEnabled)
-        console.log(isPrivacyStored)
         if (isAutoLoginEnabled && isPrivacyStored) {
-          console.log(privacy.id)
           webViewRef.current.injectJavaScript(
             getLoginScript(privacy.id, privacy.pw)
           )
