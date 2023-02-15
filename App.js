@@ -3,16 +3,26 @@ import { AppState, TouchableOpacity } from 'react-native'
 import { Text, View } from 'react-native'
 import { WebView } from 'react-native-webview'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import * as Brightness from 'expo-brightness'
 import {
   loginDataInterceptor,
   getLoginScript
 } from './webViewInjectableScripts.js'
+import { LOGIN_PAGE_LINK } from './constants.js'
 
-const AUTO_LOGIN_FLAG_KEY = 'asdfafsdfacxvrsadf'
-const PRIVACY_KEY = 'qwerqweqrewr'
+const AUTO_LOGIN_FLAG_KEY = 'cbhs-forever-yeah-3'
+const PRIVACY_KEY = 'good-place-good-3'
 
 let tId = ''
 let tPw = ''
+let tBrightness = ''
+
+const setBrightness = async (brightness) => {
+  const { status } = await Brightness.requestPermissionsAsync()
+  if (status === 'granted') {
+    Brightness.setSystemBrightnessAsync(brightness)
+  }
+}
 
 const App = () => {
   const [isAutoLoginEnabled, setIsAutoLoginEnabled] = useState(true)
@@ -23,7 +33,6 @@ const App = () => {
   const appState = useRef(AppState.currentState)
   const [appStateVisible, setAppStateVisible] = useState(appState.current)
 
-  // only runs at whenComponentMounted!
   useEffect(() => {
     Promise.all([
       AsyncStorage.getItem(PRIVACY_KEY),
@@ -54,8 +63,18 @@ const App = () => {
         appState.current.match(/inactive|background/) &&
         nextAppState === 'active'
       ) {
-        const redirectTo = `window.location = 'http://115.92.96.29:8080/employee/login.jsp'`
+        const redirectTo = `window.location = '${LOGIN_PAGE_LINK}'`
         webViewRef.current.injectJavaScript(redirectTo)
+        Brightness.getBrightnessAsync().then((brightness) => {
+          tBrightness = brightness
+        })
+      }
+
+      if (
+        (appState.current.match(/active/) && nextAppState === 'inactive') ||
+        nextAppState === 'background'
+      ) {
+        setBrightness(tBrightness)
       }
 
       appState.current = nextAppState
@@ -113,6 +132,8 @@ const App = () => {
         // 둘다 일어났을 때 비로소 데이터를 갱신할 수 있다.
         // message 를 waiting 하면서 message 가 오면 그때 저장하는거 어때? privacy 를 갱신하는거지.
         setPrivacy({ id: tId, pw: tPw })
+
+        setBrightness(0.8)
       } else if (
         (prevPage === 'init' || prevPage === 'myInfo') &&
         currentPage === 'login'
@@ -125,7 +146,6 @@ const App = () => {
           )
         }
       } else if (prevPage === 'login' && currentPage === 'login') {
-        // setIsAutoLoginEnabled(false)
         webViewRef.current.injectJavaScript(loginDataInterceptor)
       }
 
@@ -140,7 +160,7 @@ const App = () => {
       <WebView
         style={{ flex: 1 }}
         originWhitelist={['*']}
-        source={{ uri: 'http://115.92.96.29:8080/employee/login.jsp' }}
+        source={{ uri: LOGIN_PAGE_LINK }}
         ref={webViewRef}
         onMessage={messageHandler}
         onNavigationStateChange={handleWebViewNavigationStateChange}
