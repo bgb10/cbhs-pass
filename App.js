@@ -8,11 +8,12 @@ import {
   loginDataInterceptor,
   getLoginScript
 } from './webViewInjectableScripts.js'
-import { LOGIN_PAGE_LINK } from './constants.js'
+import { LOGIN_PAGE_LINK, BRIGHTNESS } from './constants.js'
 
 const AUTO_LOGIN_FLAG_KEY = 'cbhs-forever-yeah-3'
 const PRIVACY_KEY = 'good-place-good-3'
 
+// 굳이 비동기 처리가 필요 없는 변수들 모음.
 let tId = ''
 let tPw = ''
 let tBrightness = ''
@@ -133,7 +134,7 @@ const App = () => {
         // message 를 waiting 하면서 message 가 오면 그때 저장하는거 어때? privacy 를 갱신하는거지.
         setPrivacy({ id: tId, pw: tPw })
 
-        setBrightness(0.8)
+        setBrightness(BRIGHTNESS)
       } else if (
         (prevPage === 'init' || prevPage === 'myInfo') &&
         currentPage === 'login'
