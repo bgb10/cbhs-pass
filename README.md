@@ -1,6 +1,13 @@
 # 충북학사 서서울관 입출입 PASS
 
-충북학사 서서울관에서 입출입 PASS를 찍을 때마다 페이지 들어가서 로그인 버튼 누르는게 귀찮아서 만든 앱입니다.
+<div align="center">
+<img src="https://user-images.githubusercontent.com/25452313/220155278-ddaa07f8-444e-4f0d-80e3-a629981c4cc1.jpeg"  width="40%" height="">
+<img src="https://user-images.githubusercontent.com/25452313/220155000-9cc7b8e5-819d-4abe-8eba-6a8ff4758450.jpeg"  width="40%" height="">
+</div>
+
+<br />
+
+충북학사 서서울관에서 입출입 PASS를 찍을 때마다 페이지 들어가서 로그인 버튼 누르는게 귀찮아서🫢 만든 앱입니다.
 
 ```
 "충격!!! 불편한 입출입 PASS를 편하게 사용하게 해주는 앱이 있다?!😮"
