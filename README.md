@@ -7,7 +7,7 @@
 
 <br />
 
-충북학사 서서울관에서 입출입 PASS를 찍을 때마다 페이지 들어가서 로그인 버튼 누르는게 귀찮아서🫢 만든 앱입니다.
+충북학사 서서울관에서 입출입 PASS를 찍을 때마다 페이지 들어가서 로그인 버튼 누르는게 귀찮아서(🫢...) 만든 앱입니다.
 
 ```
 "충격!!! 불편한 입출입 PASS를 편하게 사용하게 해주는 앱이 있다?!😮"
@@ -36,6 +36,12 @@ Github: https://github.com/bgb10/cbhs-pass (충북학사 재사중이신 개발�
 # 기술 스택
 
 - React Native, Expo Go, JavaScript
+
+# 다이어그램
+
+<div align="center">
+<img width="820" alt="image" src="https://user-images.githubusercontent.com/25452313/220238223-282d29f0-ea52-4de4-b458-d966cb03a2d3.png">
+</div>
 
 # 기능
 
