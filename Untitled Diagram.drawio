@@ -1,1 +1,58 @@
-<mxfile host="app.diagrams.net" modified="2023-02-21T02:43:25.656Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36" version="20.8.21" etag="JpbWpN0W2H2OTr5wy8EU" type="github"><diagram name="Page-1" id="Wq1g6QRhdaZ586b9jKYn">UzV2zq1wL0osyPDNT0nNUTV2VTV2LsrPL4GwciucU3NyVI0MMlNUjV1UjYwMgFjVyA2HrCFY1qAgsSg1rwSLBiADYTaQg2Y1AA==</diagram></mxfile>
+<mxfile host="app.diagrams.net" modified="2023-02-21T02:56:08.668Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36" etag="KgRA3ECoF9rOCnP1KN5q" version="20.8.21" type="github">
+  <diagram name="Page-1" id="Wq1g6QRhdaZ586b9jKYn">
+    <mxGraphModel dx="1018" dy="1383" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Kjf1R39ZuUc30e6LtsRi-1" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="320" width="720" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="Kjf1R39ZuUc30e6LtsRi-2" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.rect;fillColor2=none;strokeWidth=1;size=20;indent=5;" vertex="1" parent="1">
+          <mxGeometry x="230" y="360" width="400" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="Kjf1R39ZuUc30e6LtsRi-8" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;width=12;startSize=8.67;endSize=8.67;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="580" y="550" as="sourcePoint" />
+            <mxPoint x="680" y="550" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Kjf1R39ZuUc30e6LtsRi-9" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;width=12;startSize=8.67;endSize=8.67;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="680" y="454.5" as="sourcePoint" />
+            <mxPoint x="580" y="454.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Kjf1R39ZuUc30e6LtsRi-10" value="LoginDataInterceptor" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="490" y="440" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Kjf1R39ZuUc30e6LtsRi-11" value="Privacy" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="680" y="535" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Kjf1R39ZuUc30e6LtsRi-12" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;width=12;startSize=8.67;endSize=8.67;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="180" y="414.5" as="sourcePoint" />
+            <mxPoint x="280" y="414.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Kjf1R39ZuUc30e6LtsRi-13" value="Auto-login Script" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="280" y="400" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Kjf1R39ZuUc30e6LtsRi-15" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://pagepro.co/blog/wp-content/uploads/2020/03/react-native-logo-884x1024.png;" vertex="1" parent="1">
+          <mxGeometry x="730" y="620" width="43.1" height="49.91" as="geometry" />
+        </mxCell>
+        <mxCell id="Kjf1R39ZuUc30e6LtsRi-16" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://miro.medium.com/max/700/1*WwN78iOX-HC74T9AHGxjOg.png;" vertex="1" parent="1">
+          <mxGeometry x="550" y="595" width="70" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="Kjf1R39ZuUc30e6LtsRi-18" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;width=12;startSize=8.67;endSize=8.67;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="280" y="565" as="sourcePoint" />
+            <mxPoint x="180" y="565" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Kjf1R39ZuUc30e6LtsRi-21" value="NavStateChange" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="100" y="550" width="60" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
